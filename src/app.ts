@@ -12,9 +12,13 @@ app.use(morgan("dev"));
 app.use(compression());
 app.use(helmet());
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use("/media", express.static(path.join(__dirname, "public")));
 
 // Routes
+import roomRouter from "@api/rooms/router";
+app.use("/rooms", roomRouter);
 
 // Error handler
 app.use(catch404);
