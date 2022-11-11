@@ -3,12 +3,7 @@ import ApiError from "@utils/ApiError";
 import config from "@config/index";
 
 // Catch 404 errors
-export const catch404 = (
-    err: ApiError,
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const catch404 = (req: Request, res: Response, next: NextFunction) => {
     // Pass 404 error to error handler
     return next(new ApiError("Resource not found", 404));
 };
@@ -23,7 +18,9 @@ export const errorHandler = (
     // Development mode
     if (config.NODE_ENV === "development") {
         const code = err.statusCode || 500;
-        return res.status(code).json({ err });
+        return res
+            .status(code)
+            .json({ ...err, message: err.message, stack: err.stack });
     }
 
     // Production mode
