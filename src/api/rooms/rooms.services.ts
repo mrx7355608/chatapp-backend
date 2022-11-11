@@ -1,6 +1,8 @@
+import { MessageInterface } from "@api/messages/messages.interfaces";
+import { createMessage } from "@api/messages/messages.services";
 import mongoose from "mongoose";
-import { RoomInterface, RoomUsers } from "./interfaces";
-import RoomModel from "./model";
+import { RoomInterface, RoomUsers } from "./rooms.interfaces";
+import RoomModel from "./rooms.model";
 
 export const getRoomData = async (
     roomid: string
@@ -24,7 +26,10 @@ export const getRoomMessages = async (
 ): Promise<Array<mongoose.Document>> => {
     const roomMessages = (await RoomModel.findById(roomid, "messages", {
         $slice: -20,
-    }).populate("messages")) as Array<mongoose.Document>;
+    }).populate({
+        path: "messages",
+        select: "sender.username sender.photo message",
+    })) as Array<mongoose.Document>;
 
     return roomMessages;
 };
@@ -48,6 +53,19 @@ export const joinRoom = async (
     await RoomModel.findByIdAndUpdate(roomid, { $push: { users: newUser } });
 };
 
+export const addMessagesInRoom = async (
+    roomid: string,
+    messageid: mongoose.Schema.Types.ObjectId
+): Promise<void> => {
+    await RoomModel.findByIdAndUpdate(roomid, {
+        $push: { messages: messageid },
+    });
+};
+
 export const removeUsersFromRoom = () => {};
-export const addMessagesInRoom = () => {};
-export const deleteRoom = () => {};
+export const deleteRoom = async (
+    roomid: string
+): Promise<RoomInterface | null> => {
+    const deleteDoc = await RoomModel.findByIdAndDelete(roomid);
+    return deleteDoc;
+};

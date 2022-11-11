@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/media", express.static(path.join(__dirname, "public")));
 
 // Routes
-import roomRouter from "@api/rooms/router";
+import roomRouter from "@api/rooms/rooms.router";
 app.use("/rooms", roomRouter);
 
 // Error handler

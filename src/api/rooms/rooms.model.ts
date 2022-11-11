@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { RoomInterface } from "./interfaces";
+import { RoomInterface } from "./rooms.interfaces";
 
 const roomUsersSchema = new mongoose.Schema({
     username: String,
