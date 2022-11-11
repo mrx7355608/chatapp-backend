@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-interface RoomUsers extends mongoose.Document {
+export interface RoomUsers extends mongoose.Document {
     _id: mongoose.Schema.Types.ObjectId;
     username: string;
     photo: string;
