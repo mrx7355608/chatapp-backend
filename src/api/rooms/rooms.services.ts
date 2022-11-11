@@ -1,5 +1,3 @@
-import { MessageInterface } from "@api/messages/messages.interfaces";
-import { createMessage } from "@api/messages/messages.services";
 import mongoose from "mongoose";
 import { RoomInterface, RoomUsers } from "./rooms.interfaces";
 import RoomModel from "./rooms.model";
@@ -16,7 +14,7 @@ export const getRoomUsers = async (
 ): Promise<Array<RoomUsers>> => {
     const roomUsers = (await RoomModel.findById(
         roomid,
-        "users"
+        "-_id users"
     )) as Array<RoomUsers>;
     return roomUsers;
 };
@@ -24,7 +22,7 @@ export const getRoomUsers = async (
 export const getRoomMessages = async (
     roomid: string
 ): Promise<Array<mongoose.Document>> => {
-    const roomMessages = (await RoomModel.findById(roomid, "messages", {
+    const roomMessages = (await RoomModel.findById(roomid, "-_id messages", {
         $slice: -20,
     }).populate({
         path: "messages",
