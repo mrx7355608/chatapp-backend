@@ -18,7 +18,10 @@ app.use("/media", express.static(path.join(__dirname, "public")));
 
 // Routes
 import roomRouter from "@api/rooms/rooms.router";
+import authRouter from "@api/auth/auth.router";
+
 app.use("/rooms", roomRouter);
+app.use("/auth", authRouter);
 
 // Error handler
 app.use(catch404);
