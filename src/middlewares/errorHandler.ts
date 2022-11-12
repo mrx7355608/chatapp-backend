@@ -2,6 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import ApiError from "@utils/ApiError";
 import config from "@config/index";
 
+const handleCastError = (res: Response, err: ApiError | Error) => {
+    return res.status(400).json({ message: err.message });
+};
+const handleValidationError = (res: Response, err: ApiError | Error) => {
+    return res.status(400).json({ message: err.message });
+};
 // Catch 404 errors
 export const catch404 = (req: Request, res: Response, next: NextFunction) => {
     // Pass 404 error to error handler
@@ -31,5 +37,8 @@ export const errorHandler = (
     if (err.isServerError) {
         return res.status(500).json({ message: "Something went wrong" });
     }
+    if (err.name === "ValidationError") return handleValidationError(res, err);
+    if (err.name === "CastError") return handleCastError(res, err);
+
     return res.status(code).json({ message });
 };
