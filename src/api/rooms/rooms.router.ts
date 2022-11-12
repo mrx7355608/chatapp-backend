@@ -1,7 +1,11 @@
+import isAuth from "@middlewares/isAuth";
 import { Router } from "express";
 import controller from "./rooms.controller";
 
 const roomRouter = Router();
+
+// Authentication middleware
+roomRouter.use(isAuth);
 
 // Return some data of room
 roomRouter.get("/:roomid", controller.httpGetRoomData);

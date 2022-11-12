@@ -10,6 +10,6 @@ export interface RoomInterface extends mongoose.Document {
     name: string;
     users: RoomUsers[];
     bannedUsers: string[];
-    messages: mongoose.Schema.Types.ObjectId[];
+    messages: mongoose.Document[];
     admin: mongoose.Schema.Types.ObjectId;
 }

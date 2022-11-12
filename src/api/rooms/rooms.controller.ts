@@ -7,77 +7,108 @@ import {
     getRoomMessages,
     deleteRoom,
     addMessagesInRoom,
+    roomExists,
 } from "./rooms.services";
 import { createMessage } from "@api/messages/messages.services";
+import ApiError from "@utils/ApiError";
+import asyncErrorHandler from "@utils/asyncErrorHandler";
 
 export default {
-    httpCreateRoom: async (req: Request, res: Response, next: NextFunction) => {
-        // Userid will be taken from the req.user object
-        // Modify it after adding authentication
-        const userid = req.body.userid;
-        const roomName = req.body.roomName;
-        const newRoom = await createRoom(roomName, userid);
-        return res.status(201).json({ data: newRoom });
-    },
+    httpCreateRoom: asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            const userid = (req as any).user._id;
+            const roomName = req.body.roomName;
+            const newRoom = await createRoom(roomName, userid);
+            return res.status(201).json({ data: newRoom });
+        }
+    ),
 
-    httpJoinRoom: async (req: Request, res: Response, next: NextFunction) => {
-        const roomid = req.body.roomid;
-        // Remove this after adding authentication
-        // username and photo will be extracted from req.user
-        const username = req.body.username;
-        const photo = req.body.photo;
-        await joinRoom(roomid, username, photo);
-        return res.status(200).json({ data: { success: true } });
-    },
+    httpJoinRoom: asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            const roomid = req.body.roomid;
+            // check if room exists
+            if (!(await roomExists(roomid))) {
+                return next(new ApiError("Room does not exists", 404));
+            }
 
-    httpGetRoomData: async (
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
-        const roomid = req.params.roomid;
-        const roomData = await getRoomData(roomid);
-        return res.status(200).json({ data: roomData });
-    },
+            // If user has already joined the room
+            const roomUsers = await getRoomUsers(roomid);
+            const isUser = roomUsers.filter(
+                (user) => user.username === (req as any).user.username
+            );
+            if (isUser) {
+                return next(
+                    new ApiError("You have already joined the room", 400)
+                );
+            }
 
-    httpGetRoomUsers: async (
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
-        const roomid = req.params.roomid;
-        const roomUsers = await getRoomUsers(roomid);
-        return res.status(200).json({ data: roomUsers });
-    },
+            // Add user in room
+            const username = (req as any).user.username;
+            const photo = (req as any).user.photo;
+            await joinRoom(roomid, username, photo);
+            return res.status(200).json({ data: { success: true } });
+        }
+    ),
 
-    httpGetRoomMessages: async (
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
-        const roomid = req.params.roomid;
-        const roomMessages = await getRoomMessages(roomid);
-        return res.status(200).json({ data: roomMessages });
-    },
+    httpGetRoomData: asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            const roomid = req.params.roomid;
+            if (!(await roomExists(roomid))) {
+                return next(new ApiError("Room does not exists", 404));
+            }
+            const roomData = await getRoomData(roomid);
+            return res.status(200).json({ data: roomData });
+        }
+    ),
 
-    httpAddMessage: async (req: Request, res: Response, next: NextFunction) => {
-        const roomid = req.params.roomid;
-        const messageData = {
-            sender: {
-                username: req.body.sender.username,
-                photo: req.body.sender.photo,
-            },
-            message: req.body.message,
-        };
-        const newMessage = await createMessage(messageData);
-        await addMessagesInRoom(roomid, newMessage._id);
-        return res.status(200).json({ newMessage });
-    },
+    httpGetRoomUsers: asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            const roomid = req.params.roomid;
+            if (!(await roomExists(roomid))) {
+                return next(new ApiError("Room does not exists", 404));
+            }
+            const roomUsers = await getRoomUsers(roomid);
+            return res.status(200).json({ data: roomUsers });
+        }
+    ),
 
-    httpDeleteRoom: async (req: Request, res: Response, next: NextFunction) => {
-        const roomid = req.params.roomid;
-        const deletedDoc = await deleteRoom(roomid);
-        console.log({ deletedDoc });
-        return res.status(200).json({ ok: true });
-    },
+    httpGetRoomMessages: asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            const roomid = req.params.roomid;
+            if (!(await roomExists(roomid))) {
+                return next(new ApiError("Room does not exists", 404));
+            }
+            const roomMessages = await getRoomMessages(roomid);
+            return res.status(200).json({ data: roomMessages });
+        }
+    ),
+
+    httpAddMessage: asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            const roomid = req.params.roomid;
+            if (!(await roomExists(roomid))) {
+                return next(new ApiError("Room does not exists", 404));
+            }
+
+            const messageData = {
+                sender: {
+                    username: (req as any).user.username,
+                    photo: (req as any).user.photo,
+                },
+                message: req.body.message,
+            };
+            const newMessage = await createMessage(messageData);
+            await addMessagesInRoom(roomid, newMessage._id);
+            return res.status(200).json({ newMessage });
+        }
+    ),
+
+    httpDeleteRoom: asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            const roomid = req.params.roomid;
+            const deletedDoc = await deleteRoom(roomid);
+            console.log({ deletedDoc });
+            return res.status(200).json({ ok: true });
+        }
+    ),
 };

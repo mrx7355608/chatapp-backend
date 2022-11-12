@@ -12,24 +12,24 @@ export const getRoomData = async (
 export const getRoomUsers = async (
     roomid: string
 ): Promise<Array<RoomUsers>> => {
-    const roomUsers = (await RoomModel.findById(
+    const room = (await RoomModel.findById(
         roomid,
         "-_id users"
-    )) as Array<RoomUsers>;
-    return roomUsers;
+    )) as RoomInterface;
+    return room.users;
 };
 
 export const getRoomMessages = async (
     roomid: string
 ): Promise<Array<mongoose.Document>> => {
-    const roomMessages = (await RoomModel.findById(roomid, "-_id messages", {
+    const room = (await RoomModel.findById(roomid, "-_id messages", {
         $slice: -20,
     }).populate({
         path: "messages",
         select: "sender.username sender.photo message",
-    })) as Array<mongoose.Document>;
+    })) as RoomInterface;
 
-    return roomMessages;
+    return room.messages;
 };
 
 export const createRoom = async (
@@ -49,6 +49,11 @@ export const joinRoom = async (
         photo,
     };
     await RoomModel.findByIdAndUpdate(roomid, { $push: { users: newUser } });
+};
+
+export const roomExists = async (roomid: string): Promise<Boolean> => {
+    const room = await RoomModel.findById(roomid);
+    return room ? true : false;
 };
 
 export const addMessagesInRoom = async (
