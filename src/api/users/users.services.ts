@@ -12,8 +12,14 @@ export const userExists = async (username: string): Promise<Boolean> => {
 };
 
 export const getUser = async (
-    filter: Object
+    filter: Object,
+    includePassword = false
 ): Promise<UserInterface | null> => {
-    const user = await UserModel.findOne(filter);
+    let user;
+    if (includePassword) {
+        user = await UserModel.findOne(filter, "+password");
+    } else {
+        user = await UserModel.findOne(filter);
+    }
     return user;
 };
