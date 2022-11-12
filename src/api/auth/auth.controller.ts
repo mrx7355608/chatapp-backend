@@ -4,6 +4,9 @@ import { loginSchema, signupSchema } from "./auth.validations";
 import asyncErrorHandler from "@utils/asyncErrorHandler";
 import ApiError from "@utils/ApiError";
 import { createTokens } from "@utils/jwtTokens";
+import jwt, { verify } from "jsonwebtoken";
+import config from "@config/index";
+import { TokenPayload } from "./auth.interfaces";
 
 export default {
     httpLogin: asyncErrorHandler(
@@ -54,10 +57,44 @@ export default {
             return res.status(201).json({ success: true });
         }
     ),
-    httpLogout: async (req: Request, res: Response, next: NextFunction) => {},
-    httpRefreshToken: async (
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {},
+
+    httpLogout: asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            res.clearCookie("rt");
+            return res.status(200).json({ success: true });
+        }
+    ),
+
+    httpRefreshToken: asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            // check if there's a refresh token cookie
+            const refreshTokenCookie = req.cookies.rt;
+            if (!refreshTokenCookie) {
+                return next(new ApiError("Refresh token missing", 400));
+            }
+
+            // validate refresh token
+            const payload = verify(
+                refreshTokenCookie,
+                config.REFRESH_TOKEN_SECRET as jwt.Secret
+            ) as TokenPayload;
+            console.log(payload);
+
+            // Check if the user still exists
+            const user = await getUser({ _id: payload.userid });
+            if (!user) {
+                return next(new ApiError("User not found.", 400));
+            }
+
+            // create new access and refresh tokens
+            const { accessToken, refreshToken } = createTokens(user._id);
+
+            // Send response
+            const cookieOptions = {
+                httpOnly: true,
+            };
+            res.cookie("rt", refreshToken, cookieOptions);
+            return res.status(200).json({ success: true, accessToken });
+        }
+    ),
 };
