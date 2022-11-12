@@ -3,6 +3,7 @@ import { createUser, getUser, userExists } from "@api/users/users.services";
 import { loginSchema, signupSchema } from "./auth.validations";
 import asyncErrorHandler from "@utils/asyncErrorHandler";
 import ApiError from "@utils/ApiError";
+import { createTokens } from "@utils/jwtTokens";
 
 export default {
     httpLogin: asyncErrorHandler(
@@ -29,9 +30,14 @@ export default {
             }
 
             // Create auth tokens
+            const { accessToken, refreshToken } = createTokens(user._id);
 
             // Send response
-            return res.status(200).json({ success: true });
+            const cookieOptions = {
+                httpOnly: true,
+            };
+            res.cookie("rt", refreshToken, cookieOptions);
+            return res.status(200).json({ success: true, accessToken });
         }
     ),
     httpSignup: asyncErrorHandler(
