@@ -5,6 +5,9 @@ import config from "@config/index";
 const handleCastError = (res: Response, err: ApiError | Error) => {
     return res.status(400).json({ message: err.message });
 };
+const handleJsonWebTokenError = (res: Response) => {
+    return res.status(400).json({ message: "Un-authorized" });
+};
 const handleValidationError = (res: Response, err: ApiError | Error) => {
     return res.status(400).json({ message: err.message });
 };
@@ -39,6 +42,7 @@ export const errorHandler = (
     }
     if (err.name === "ValidationError") return handleValidationError(res, err);
     if (err.name === "CastError") return handleCastError(res, err);
+    if (err.name === "JsonWebTokenError") return handleJsonWebTokenError(res);
 
     return res.status(code).json({ message });
 };
