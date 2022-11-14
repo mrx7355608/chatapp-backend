@@ -53,11 +53,11 @@ export default {
     httpGetRoomData: asyncErrorHandler(
         async (req: Request, res: Response, next: NextFunction) => {
             const roomid = req.params.roomid;
-            if (!(await roomExists(roomid))) {
+            const room = await getRoomData(roomid);
+            if (!room) {
                 return next(new ApiError("Room does not exists", 404));
             }
-            const roomData = await getRoomData(roomid);
-            return res.status(200).json({ data: roomData });
+            return res.status(200).json({ data: room });
         }
     ),
 

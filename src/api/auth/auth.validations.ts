@@ -5,17 +5,17 @@ const signupSchema = joi.object({
         "string.empty": "First name cannot be empty",
         "string.min": "First name should be at least 4 characters long",
         "string.max": "First name cannot exceed 20 characters length",
-        "any.required": "Ummmm... don't you have a first name?",
+        "any.required": "First name is missing.",
     }),
     lname: joi.string().min(4).max(20).required().messages({
         "string.empty": "Last name cannot be empty",
         "string.min": "Last name should be at least 4 characters long",
         "string.max": "Last name cannot exceed 20 characters length",
-        "any.required": "Ummmm... don't you have a last name?",
+        "any.required": "Last name is missing",
     }),
-    username: joi.string().min(8).max(50).required().messages({
+    username: joi.string().min(5).max(50).required().messages({
         "string.empty": "Username cannot be empty",
-        "string.min": "Username should be at least 8 characters long",
+        "string.min": "Username should be at least 5 characters long",
         "string.max": "Username should not exceed 50 characters length",
         "any.required": "Username is missing",
     }),

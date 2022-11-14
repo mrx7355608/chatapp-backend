@@ -78,7 +78,6 @@ export default {
                 refreshTokenCookie,
                 config.REFRESH_TOKEN_SECRET as jwt.Secret
             ) as TokenPayload;
-            console.log(payload);
 
             // Check if the user still exists
             const user = await getUser({ _id: payload.userid });

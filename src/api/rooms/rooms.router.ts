@@ -26,6 +26,6 @@ roomRouter.post("/create", controller.httpCreateRoom);
 roomRouter.post("/join", controller.httpJoinRoom);
 
 // Delete the room
-roomRouter.post("/:id/delete");
+roomRouter.post("/:roomid/delete");
 
 export default roomRouter;
