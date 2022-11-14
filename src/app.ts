@@ -12,11 +12,15 @@ const app: Application = express();
 app.use(morgan("dev"));
 app.use(compression());
 app.use(helmet());
-app.use(cors());
+app.use(
+    cors({
+        origin: "http://localhost:5173",
+    })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use("/media", express.static(path.join(__dirname, "public")));
+app.use("/media", express.static(path.join(__dirname, "..", "public")));
 
 // Routes
 import roomRouter from "@api/rooms/rooms.router";
