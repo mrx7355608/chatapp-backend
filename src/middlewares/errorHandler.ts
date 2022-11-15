@@ -3,7 +3,7 @@ import ApiError from "@utils/ApiError";
 import config from "@config/index";
 
 const handleCastError = (res: Response, err: ApiError | Error) => {
-    return res.status(400).json({ message: err.message });
+    return res.status(400).json({ message: "Invalid ID" });
 };
 const handleJsonWebTokenError = (res: Response) => {
     return res.status(400).json({ message: "Un-authorized" });
@@ -43,6 +43,7 @@ export const errorHandler = (
     if (err.name === "ValidationError") return handleValidationError(res, err);
     if (err.name === "CastError") return handleCastError(res, err);
     if (err.name === "JsonWebTokenError") return handleJsonWebTokenError(res);
+    if (err.name === "TokenExpiredError") return handleJsonWebTokenError(res);
 
     return res.status(code).json({ message });
 };

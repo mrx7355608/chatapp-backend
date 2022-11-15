@@ -2,6 +2,12 @@ import mongoose from "mongoose";
 import { RoomInterface, RoomUsers } from "./rooms.interfaces";
 import RoomModel from "./rooms.model";
 
+export const getCompleteRoomData = async (
+    roomid: string
+): Promise<RoomInterface | null> => {
+    const room = await RoomModel.findById(roomid);
+    return room;
+};
 export const getRoomData = async (
     roomid: string
 ): Promise<RoomInterface | null> => {
@@ -34,9 +40,14 @@ export const getRoomMessages = async (
 
 export const createRoom = async (
     roomName: string,
+    roomPassword: string,
     userid: mongoose.Schema.Types.ObjectId
 ): Promise<RoomInterface> => {
-    return await RoomModel.create({ admin: userid, name: roomName });
+    return await RoomModel.create({
+        admin: userid,
+        name: roomName,
+        password: roomPassword,
+    });
 };
 
 export const joinRoom = async (

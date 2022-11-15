@@ -10,6 +10,9 @@ export interface RoomInterface extends mongoose.Document {
     name: string;
     users: RoomUsers[];
     bannedUsers: string[];
+    password: string;
     messages: mongoose.Document[];
     admin: mongoose.Schema.Types.ObjectId;
+
+    validatePassword(roomPassword: string): Promise<Boolean>;
 }
