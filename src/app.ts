@@ -15,6 +15,7 @@ app.use(helmet());
 app.use(
     cors({
         origin: "http://localhost:5173",
+        credentials: true,
     })
 );
 app.use(cookieParser());
@@ -25,9 +26,11 @@ app.use("/media", express.static(path.join(__dirname, "..", "public")));
 // Routes
 import roomRouter from "@api/rooms/rooms.router";
 import authRouter from "@api/auth/auth.router";
+import userRouter from "@api/users/users.router";
 
 app.use("/rooms", roomRouter);
 app.use("/auth", authRouter);
+app.use("/user", userRouter);
 
 // Error handler
 app.use(catch404);

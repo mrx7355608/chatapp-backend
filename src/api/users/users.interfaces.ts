@@ -9,6 +9,7 @@ export interface UserData {
 
 export interface UserInterface extends UserData, Document {
     photo: string;
+    fullname: string;
     createdAt: Date;
     updatedAt: Date;
 
