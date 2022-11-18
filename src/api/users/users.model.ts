@@ -34,8 +34,8 @@ userSchema.index({ username: 1 });
 // Give user a random photo
 userSchema.pre("save", function (next) {
     if (!this.isNew) return next();
-    const randomNumber = Math.floor(Math.random() * 6);
-    this.photo = `/media/images/photo-${randomNumber}.png`;
+    const randomNumber = Math.floor(Math.random() * 7);
+    this.photo = `/media/images/photo-${randomNumber}.jpg`;
     next();
 });
 

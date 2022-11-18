@@ -6,7 +6,7 @@ const handleCastError = (res: Response, err: ApiError | Error) => {
     return res.status(400).json({ message: "Invalid ID" });
 };
 const handleJsonWebTokenError = (res: Response) => {
-    return res.status(400).json({ message: "Un-authorized" });
+    return res.status(401).json({ message: "Un-authorized" });
 };
 const handleValidationError = (res: Response, err: ApiError | Error) => {
     return res.status(400).json({ message: err.message });

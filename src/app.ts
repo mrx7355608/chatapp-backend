@@ -11,7 +11,11 @@ const app: Application = express();
 
 app.use(morgan("dev"));
 app.use(compression());
-app.use(helmet());
+app.use(
+    helmet({
+        crossOriginResourcePolicy: { policy: "cross-origin" },
+    })
+);
 app.use(
     cors({
         origin: "http://localhost:5173",
