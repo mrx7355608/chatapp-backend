@@ -38,6 +38,7 @@ export default {
             // Send response
             const cookieOptions = {
                 httpOnly: true,
+                path: "/auth/refresh-token",
             };
             res.cookie("rt", refreshToken, cookieOptions);
             return res.status(200).json({ success: true, accessToken });
@@ -57,20 +58,18 @@ export default {
             return res.status(201).json({ success: true });
         }
     ),
-
     httpLogout: asyncErrorHandler(
         async (req: Request, res: Response, next: NextFunction) => {
             res.clearCookie("rt");
             return res.status(200).json({ success: true });
         }
     ),
-
     httpRefreshToken: asyncErrorHandler(
         async (req: Request, res: Response, next: NextFunction) => {
             // check if there's a refresh token cookie
             const refreshTokenCookie = req.cookies.rt;
             if (!refreshTokenCookie) {
-                return next(new ApiError("Refresh token missing", 400));
+                return res.status(200).json({ ok: true, accessToken: "" });
             }
 
             // validate refresh token
@@ -80,9 +79,9 @@ export default {
             ) as TokenPayload;
 
             // Check if the user still exists
-            const user = await getUser({ _id: payload.userid });
+            const user = await getUser({ _id: payload.id });
             if (!user) {
-                return next(new ApiError("User not found.", 400));
+                return res.status(200).json({ ok: true, accessToken: "" });
             }
 
             // create new access and refresh tokens
