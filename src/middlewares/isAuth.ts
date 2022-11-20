@@ -18,11 +18,12 @@ export default asyncErrorHandler(
         // validate access token
         const payload = verify(
             accessToken,
-            config.ACCESS_TOKEN_SECRET as jwt.Secret
+            config.ACCESS_TOKEN_SECRET as jwt.Secret,
+            { audience: "ca", algorithms: ["HS256"] }
         ) as TokenPayload;
 
         // check if user still exists
-        const user = await getUser({ _id: payload.userid });
+        const user = await getUser({ _id: payload.id });
         if (!user) {
             return next(new ApiError("User not found", 400));
         }
