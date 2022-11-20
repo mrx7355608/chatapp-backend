@@ -84,6 +84,11 @@ export default {
                 return res.status(200).json({ ok: true, accessToken: "" });
             }
 
+            // Check if token is not revoked
+            if (payload.v !== user.tokenVersion) {
+                return res.status(200).json({ ok: true, accessToken: "" });
+            }
+
             // create new access and refresh tokens
             const { accessToken, refreshToken } = createTokens(user._id);
 
@@ -95,4 +100,16 @@ export default {
             return res.status(200).json({ success: true, accessToken });
         }
     ),
+    httpForgotPassword: asyncErrorHandler(
+        async(req: Request, res: Response, next: NextFunction) {
+            // Send email containing a reset password token
+        }
+    )
+    httpResetPassword: asyncErrorHandler(
+        async(req: Request, res: Response, next: NextFunction) {
+            // Verify token
+            // Change token version in DB
+            // Reset user's password
+        }
+    )
 };

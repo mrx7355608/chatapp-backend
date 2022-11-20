@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema(
             required: true,
             select: false,
         },
+        tokenVersion:{
+            type: Number
+            default: 0,
+        },
     },
     { toJSON: { virtuals: true }, id: false }
 );
