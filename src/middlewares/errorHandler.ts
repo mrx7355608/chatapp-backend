@@ -18,13 +18,8 @@ export const catch404 = (req: Request, res: Response, next: NextFunction) => {
 };
 
 // Error handler
-export const errorHandler = (
-    err: ApiError,
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    console.log(err.message);
+export const errorHandler = (err: ApiError, req: Request, res: Response, next: NextFunction) => {
+    console.log(err);
     const code = err.statusCode || 500;
     const message = err.message;
 
@@ -40,6 +35,7 @@ export const errorHandler = (
     if (err.name === "CastError") return handleCastError(res, err);
     if (err.name === "JsonWebTokenError") return handleJsonWebTokenError(res);
     if (err.name === "TokenExpiredError") return handleJsonWebTokenError(res);
+    if (err.isClientError) return res.status(code).json({ message });
 
     return res.status(500).json({ message: "Something went wrong" });
 };

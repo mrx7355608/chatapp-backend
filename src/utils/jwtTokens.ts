@@ -9,12 +9,16 @@ const createAccessTokens = (user: UserInterface) => {
     });
 };
 const createRefreshTokens = (user: UserInterface) => {
-    return sign({ id: user._id, v: user.tokenVersion }, config.REFRESH_TOKEN_SECRET as jwt.Secret, {
-        expiresIn: "1d",
-    });
+    return sign(
+        { id: user._id, v: user.tokenVersion },
+        config.REFRESH_TOKEN_SECRET as jwt.Secret,
+        {
+            expiresIn: "1d",
+        }
+    );
 };
 
-export const createTokens = (user: UserInterfac) => {
+export const createTokens = (user: UserInterface) => {
     const accessToken = createAccessTokens(user);
     const refreshToken = createRefreshTokens(user);
     return { accessToken, refreshToken };

@@ -24,8 +24,8 @@ const userSchema = new mongoose.Schema(
             required: true,
             select: false,
         },
-        tokenVersion:{
-            type: Number
+        tokenVersion: {
+            type: Number,
             default: 0,
         },
     },
@@ -52,18 +52,14 @@ userSchema.pre("save", async function (next) {
 });
 
 // Validate password
-userSchema.methods.isValidPassword = async function (
-    inputPassword: string
-): Promise<Boolean> {
+userSchema.methods.isValidPassword = async function (inputPassword: string): Promise<Boolean> {
     return await bcrypt.compare(inputPassword, this.password);
 };
 
 // A virtual property for fullname
 userSchema.virtual("fullname").get(function (): string {
-    const firstName: string =
-        this.fname.substring(0, 1).toUpperCase() + this.fname.substring(1);
-    const lastName: string =
-        this.lname.substring(0, 1).toUpperCase() + this.lname.substring(1);
+    const firstName: string = this.fname.substring(0, 1).toUpperCase() + this.fname.substring(1);
+    const lastName: string = this.lname.substring(0, 1).toUpperCase() + this.lname.substring(1);
     return `${firstName} ${lastName}`;
 });
 
