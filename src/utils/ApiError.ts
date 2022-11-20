@@ -1,13 +1,13 @@
 class ApiError extends Error {
     public message: string;
     public statusCode: number;
-    public isServerError: boolean;
+    public isClientError: boolean;
 
-    constructor(message: string, statusCode: number, isServerError = false) {
+    constructor(message: string, statusCode: number, isClientError = true) {
         super(message);
         this.message = message;
         this.statusCode = statusCode;
-        this.isServerError = isServerError;
+        this.isClientError = isClientError;
 
         // Creates a " .stack " property on given object
         Error.captureStackTrace(this);
