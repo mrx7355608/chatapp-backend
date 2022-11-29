@@ -65,8 +65,13 @@ export const addMessagesInRoom = async (
     });
 };
 
-export const removeUsersFromRoom = async (roomid: string, userid: string) => {
-    return await RoomModel.findByIdAndUpdate(roomid, { $pull: { users: userid } });
+export const removeUsersFromRoom = async (roomid: string, username: string): Promise<void> => {
+    console.log({ username });
+    await RoomModel.findByIdAndUpdate(
+        roomid,
+        { $pull: { users: { username } } },
+        { new: true, multi: true }
+    );
 };
 
 export const deleteRoom = async (roomid: string): Promise<RoomInterface | null> => {
