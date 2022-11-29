@@ -2,32 +2,21 @@ import mongoose from "mongoose";
 import { RoomInterface, RoomUsers } from "./rooms.interfaces";
 import RoomModel from "./rooms.model";
 
-export const getCompleteRoomData = async (
-    roomid: string
-): Promise<RoomInterface | null> => {
+export const getCompleteRoomData = async (roomid: string): Promise<RoomInterface | null> => {
     const room = await RoomModel.findById(roomid);
     return room;
 };
-export const getRoomData = async (
-    roomid: string
-): Promise<RoomInterface | null> => {
+export const getRoomData = async (roomid: string): Promise<RoomInterface | null> => {
     const roomData = await RoomModel.findById(roomid, "name bannedUsers admin");
     return roomData;
 };
 
-export const getRoomUsers = async (
-    roomid: string
-): Promise<Array<RoomUsers>> => {
-    const room = (await RoomModel.findById(
-        roomid,
-        "-_id users"
-    )) as RoomInterface;
+export const getRoomUsers = async (roomid: string): Promise<Array<RoomUsers>> => {
+    const room = (await RoomModel.findById(roomid, "-_id users")) as RoomInterface;
     return room.users;
 };
 
-export const getRoomMessages = async (
-    roomid: string
-): Promise<Array<mongoose.Document>> => {
+export const getRoomMessages = async (roomid: string): Promise<Array<mongoose.Document>> => {
     const room = (await RoomModel.findById(roomid, "-_id messages", {
         $slice: -20,
     }).populate({
@@ -54,12 +43,12 @@ export const joinRoom = async (
     roomid: string,
     username: string,
     photo: string
-): Promise<void> => {
+): Promise<RoomInterface | null> => {
     const newUser = {
         username,
         photo,
     };
-    await RoomModel.findByIdAndUpdate(roomid, { $push: { users: newUser } });
+    return await RoomModel.findByIdAndUpdate(roomid, { $push: { users: newUser } }, { new: true });
 };
 
 export const roomExists = async (roomid: string): Promise<Boolean> => {
@@ -76,10 +65,11 @@ export const addMessagesInRoom = async (
     });
 };
 
-export const removeUsersFromRoom = () => {};
-export const deleteRoom = async (
-    roomid: string
-): Promise<RoomInterface | null> => {
+export const removeUsersFromRoom = async (roomid: string, userid: string) => {
+    return await RoomModel.findByIdAndUpdate(roomid, { $pull: { users: userid } });
+};
+
+export const deleteRoom = async (roomid: string): Promise<RoomInterface | null> => {
     const deleteDoc = await RoomModel.findByIdAndDelete(roomid);
     return deleteDoc;
 };
