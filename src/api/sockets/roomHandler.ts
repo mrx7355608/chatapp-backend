@@ -2,31 +2,35 @@ import { addMessagesInRoom, removeUsersFromRoom } from "@api/rooms/rooms.service
 import { createMessage } from "@api/messages/messages.services";
 import ApiError from "@utils/ApiError";
 import { Server, Socket } from "socket.io";
-import { ClientToServerEvents, ServerToClientEvents } from "./sockets.interfaces";
+import {
+    ClientToServerEvents,
+    InterServerEvents,
+    ServerToClientEvents,
+    SocketData,
+} from "./sockets.interfaces";
+import { UserInterface } from "@api/users/users.interfaces";
 
 export default (
     io: Server<ClientToServerEvents, ServerToClientEvents>,
-    socket: Socket<ClientToServerEvents, ServerToClientEvents>
+    socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
 ) => {
     // Join room
     socket.on("room:join", async (data) => {
-        const { roomid } = socket as any;
-        console.log(roomid);
-        socket.join((socket as any).roomid);
-
-        // emit an event to notify room members about the new user
-        const user = (socket as any).user;
-        socket.to((socket as any).roomid).emit("room:new-user-joined", user);
+        const roomid = socket.data.roomid as string;
+        const user = socket.data.user as Object;
+        socket.join(roomid);
+        socket.to(roomid).emit("room:new-user-joined", user);
     });
 
     // New message event
     socket.on("room:new-message", async (message) => {
-        const { roomid } = socket as any;
+        const roomid = socket.data.roomid as string;
+        const user = socket.data.user as UserInterface;
         // Message object
         const messageData = {
             sender: {
-                username: (socket as any).user.username,
-                photo: (socket as any).user.photo,
+                username: user.username,
+                photo: user.photo,
             },
             message,
         };
@@ -40,11 +44,11 @@ export default (
 
     // Disconnect
     socket.on("disconnect", async (reason) => {
+        const roomid = socket.data.roomid as string;
+        const user = socket.data.user as UserInterface;
+
         console.log({ disconnect_reason: reason });
-        const roomid = (socket as any).roomid;
-        const userid = (socket as any).user._id;
-        console.log({ roomid, userid });
-        await removeUsersFromRoom(roomid, userid);
-        socket.to((socket as any).roomid).emit("room:user-left", (socket as any).user);
+        await removeUsersFromRoom(roomid, user._id);
+        socket.to(roomid).emit("room:user-left", user._id);
     });
 };

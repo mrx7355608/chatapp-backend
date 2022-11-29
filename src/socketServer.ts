@@ -1,6 +1,11 @@
 import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
-import { ClientToServerEvents, ServerToClientEvents } from "@api/sockets/sockets.interfaces";
+import {
+    ClientToServerEvents,
+    InterServerEvents,
+    ServerToClientEvents,
+    SocketData,
+} from "@api/sockets/sockets.interfaces";
 import { TokenPayload } from "@api/auth/auth.interfaces";
 import { getUser } from "@api/users/users.services";
 import jwt, { verify } from "jsonwebtoken";
@@ -8,7 +13,12 @@ import ApiError from "@utils/ApiError";
 import roomHandler from "@api/sockets/roomHandler";
 
 const setupSocketServer = (httpServer: HttpServer) => {
-    const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
+    const io = new Server<
+        ClientToServerEvents,
+        ServerToClientEvents,
+        InterServerEvents,
+        SocketData
+    >(httpServer, {
         cors: {
             origin: "http://localhost:5173",
         },
@@ -33,25 +43,20 @@ const setupSocketServer = (httpServer: HttpServer) => {
 
         // Get user data
         const user = await getUser({ _id: payload.id });
-        (socket as any).user = user;
+        socket.data.user = user;
         next();
     });
 
     // Create a "roomid" prop on socket object
     io.use((socket, next) => {
         const { roomid } = socket.handshake.auth;
-        console.log({ ROOMID: roomid });
-        if (!roomid) {
-            console.log("err");
-            return next(new ApiError("Roomid missing", 401));
-        }
-        (socket as any).roomid = roomid;
+        if (!roomid) return next(new ApiError("Roomid missing", 401));
+        socket.data.roomid = roomid;
         next();
     });
 
     io.on("connection", (socket) => {
         console.log(`[INFO] NEW CONNECTION ${socket.id}`);
-        console.log;
         roomHandler(io, socket);
     });
 };
