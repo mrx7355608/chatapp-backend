@@ -51,7 +51,10 @@ export default {
     }),
 
     httpLogout: asyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
-        res.clearCookie("rt");
+	    res.cookie("rt", "", {
+		    path: "/auth/refresh-token",
+		    httpOnly: true
+	    })
         return res.status(200).json({ success: true });
     }),
 
@@ -59,6 +62,7 @@ export default {
         // check if there's a refresh token cookie
         const refreshTokenCookie = req.cookies.rt;
         if (!refreshTokenCookie) {
+		console.log(refreshTokenCookie)
             return res.status(200).json({ ok: true, accessToken: "" });
         }
 
@@ -85,7 +89,9 @@ export default {
         // Send response
         const cookieOptions = {
             httpOnly: true,
+            path: "/auth/refresh-token",
         };
+	console.log("TOKEN HAS BEEN REFRESHED!");
         res.cookie("rt", refreshToken, cookieOptions);
         return res.status(200).json({ success: true, accessToken });
     }),

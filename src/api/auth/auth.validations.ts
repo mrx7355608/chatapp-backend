@@ -24,7 +24,7 @@ const signupSchema = joi.object({
         "string.min": "Password should be at least 8 characters long",
         "any.required": "Password is missing",
     }),
-    confirm_password: joi.valid(joi.ref("password")).messages({
+    confirmPassword: joi.valid(joi.ref("password")).messages({
         "any.only": "Passwords do not match",
     }),
 });
