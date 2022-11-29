@@ -1,9 +1,11 @@
+import { MessageInterface } from "@api/messages/messages.interfaces";
+
 export interface ClientToServerEvents {
-    "room:join": (data: Object) => void; // TODO: "data" type.
-    "message:send-new-message": () => void;
+    "room:join": (data: Object) => void;
+    "room:new-message": (message: string) => void;
 }
 export interface ServerToClientEvents {
-    "message:new-message-received": () => void;
-    "room:new-user-joined": () => void;
-    "room:user-left": () => void;
+    "room:new-message-received": (data: MessageInterface) => void;
+    "room:new-user-joined": (data: Object) => void;
+    "room:user-left": (data: Object) => void;
 }
