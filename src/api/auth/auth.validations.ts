@@ -2,6 +2,7 @@ import joi from "joi";
 
 const signupSchema = joi.object({
     fname: joi.string().min(4).max(20).required().messages({
+        "string.base": "First name should be a text value",
         "string.empty": "First name cannot be empty",
         "string.min": "First name should be at least 4 characters long",
         "string.max": "First name cannot exceed 20 characters length",
@@ -9,12 +10,14 @@ const signupSchema = joi.object({
     }),
     lname: joi.string().min(4).max(20).required().messages({
         "string.empty": "Last name cannot be empty",
+        "string.base": "Last name should be a text value",
         "string.min": "Last name should be at least 4 characters long",
         "string.max": "Last name cannot exceed 20 characters length",
         "any.required": "Last name is missing",
     }),
     username: joi.string().min(5).max(50).required().messages({
         "string.empty": "Username cannot be empty",
+        "string.base": "Username should be a text value",
         "string.min": "Username should be at least 5 characters long",
         "string.max": "Username should not exceed 50 characters length",
         "any.required": "Username is missing",
@@ -22,6 +25,7 @@ const signupSchema = joi.object({
     password: joi.string().min(8).required().messages({
         "string.empty": "Password cannot be empty",
         "string.min": "Password should be at least 8 characters long",
+        "string.base": "Password should be a text value",
         "any.required": "Password is missing",
     }),
     confirmPassword: joi.valid(joi.ref("password")).messages({
@@ -31,11 +35,11 @@ const signupSchema = joi.object({
 
 const loginSchema = joi.object({
     username: joi.string().required().messages({
-        "string.base": "Username should be a string",
+        "string.base": "Username should be a text value",
         "any.required": "Username is missing",
     }),
     password: joi.string().required().messages({
-        "string.base": "Password should be a string",
+        "string.base": "Password should be a text value",
         "any.required": "Password is missing",
     }),
 });

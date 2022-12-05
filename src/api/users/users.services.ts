@@ -19,7 +19,7 @@ export const getUser = async (
     if (includePassword) {
         user = await UserModel.findOne(filter, "+password");
     } else {
-        user = await UserModel.findOne(filter);
+        user = await UserModel.findOne(filter, "-createdAt -updatedAt -__v -tokenVersion");
     }
     return user;
 };

@@ -57,7 +57,6 @@ export default {
         const photo = (req as any).user.photo;
         const updateRoomData = await joinRoom(roomid, username, photo);
 
-        // send back the roomidCookie
         return sendResponse(res, 200, { room: updateRoomData });
     }),
 
@@ -89,30 +88,4 @@ export default {
             return sendResponse(res, 200, roomMessages);
         }
     ),
-
-    // TODO: remove this controller
-    httpAddMessage: asyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const roomid = req.params.roomid;
-        if (!(await roomExists(roomid))) {
-            return next(new ApiError("Room does not exists", 404));
-        }
-
-        const messageData = {
-            sender: {
-                username: (req as any).user.username,
-                photo: (req as any).user.photo,
-            },
-            message: req.body.message,
-        };
-        const newMessage = await createMessage(messageData);
-        await addMessagesInRoom(roomid, newMessage._id);
-        return sendResponse(res, 200, newMessage);
-    }),
-
-    httpDeleteRoom: asyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const roomid = req.params.roomid;
-        const deletedDoc = await deleteRoom(roomid);
-        console.log({ deletedDoc });
-        return sendResponse(res, 200, { success: true });
-    }),
 };

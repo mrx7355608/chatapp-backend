@@ -16,16 +16,10 @@ roomRouter.get("/:roomid/users", controller.httpGetRoomUsers);
 // Return room messages
 roomRouter.get("/:roomid/messages", controller.httpGetRoomMessages);
 
-// Add received messages in room
-roomRouter.post("/:roomid/add-message", controller.httpAddMessage);
-
 // Create a new room
 roomRouter.post("/create", controller.httpCreateRoom);
 
 // Join room
 roomRouter.post("/join", controller.httpJoinRoom);
-
-// Delete the room
-roomRouter.post("/:roomid/delete");
 
 export default roomRouter;

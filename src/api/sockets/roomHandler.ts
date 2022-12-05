@@ -47,8 +47,7 @@ export default (
         const roomid = socket.data.roomid as string;
         const user = socket.data.user as UserInterface;
 
-        socket.to(roomid).emit("room:user-left", user._id);
-        console.log({ disconnect_reason: reason });
+        socket.to(roomid).emit("room:user-left", user);
         await removeUsersFromRoom(roomid, user.username);
     });
 };

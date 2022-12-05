@@ -18,7 +18,7 @@ export const getRoomUsers = async (roomid: string): Promise<Array<RoomUsers>> =>
 
 export const getRoomMessages = async (roomid: string): Promise<Array<mongoose.Document>> => {
     const room = (await RoomModel.findById(roomid, "-_id messages", {
-        $slice: -20,
+        $slice: -2,
     }).populate({
         path: "messages",
         select: "sender.username sender.photo message",
