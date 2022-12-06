@@ -1,6 +1,5 @@
 import { addMessagesInRoom, removeUsersFromRoom } from "@api/rooms/rooms.services";
 import { createMessage } from "@api/messages/messages.services";
-import ApiError from "@utils/ApiError";
 import { Server, Socket } from "socket.io";
 import {
     ClientToServerEvents,

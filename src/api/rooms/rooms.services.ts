@@ -43,12 +43,27 @@ export const joinRoom = async (
     roomid: string,
     username: string,
     photo: string
-): Promise<RoomInterface | null> => {
+): Promise<Object | null> => {
     const newUser = {
         username,
         photo,
     };
-    return await RoomModel.findByIdAndUpdate(roomid, { $push: { users: newUser } }, { new: true });
+    const data = await RoomModel.findByIdAndUpdate(
+        roomid,
+        { $push: { users: newUser } },
+        {
+            new: true,
+            projection: {
+                password: false,
+                __v: false,
+                createdAt: false,
+                updatedAt: false,
+                messages: false,
+                users: false,
+            },
+        }
+    );
+    return data;
 };
 
 export const roomExists = async (roomid: string): Promise<Boolean> => {

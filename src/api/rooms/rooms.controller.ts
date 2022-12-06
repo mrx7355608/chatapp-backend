@@ -55,9 +55,9 @@ export default {
         // Add user in room
         const username = (req as any).user.username;
         const photo = (req as any).user.photo;
-        const updateRoomData = await joinRoom(roomid, username, photo);
+        const roomData = await joinRoom(roomid, username, photo);
 
-        return sendResponse(res, 200, { room: updateRoomData });
+        return sendResponse(res, 200, roomData as Object);
     }),
 
     httpGetRoomData: asyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
