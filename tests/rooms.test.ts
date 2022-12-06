@@ -56,7 +56,7 @@ describe("Testing rooms route", () => {
                 .get(`/rooms/${roomid}`)
                 .expect("Content-type", /json/)
                 .expect(200);
-            expect(response.body).toEqual({
+            expect(response.body).toStrictEqual({
                 data: {
                     name: expect.any(String),
                     _id: expect.any(String),
@@ -102,7 +102,7 @@ describe("Testing rooms route", () => {
                 })
                 .expect(200);
 
-            expect(response.body).toEqual({
+            expect(response.body).toStrictEqual({
                 data: {
                     admin: expect.any(String),
                     _id: expect.any(String),
