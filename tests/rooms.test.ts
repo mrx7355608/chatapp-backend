@@ -36,6 +36,8 @@ describe("Testing rooms route", () => {
     });
 
     describe("Get room data", () => {
+        const roomid = "638e0b99ae132c4bc24f48c9";
+
         it("responds with 400 and an error message with invalid room id", async () => {
             await agent.get("/rooms/123123123").expect("Content-type", /json/).expect(400, {
                 message: "Invalid ID",
@@ -49,9 +51,21 @@ describe("Testing rooms route", () => {
                     message: "Room does not exists",
                 });
         });
-        it.skip("returns room data when valid data is given", () => {});
+        it("returns room data when valid data is given", async () => {
+            const response = await agent
+                .get(`/rooms/${roomid}`)
+                .expect("Content-type", /json/)
+                .expect(200);
+            expect(response.body).toEqual({
+                data: {
+                    name: expect.any(String),
+                    _id: expect.any(String),
+                    admin: expect.any(String),
+                    bannedUsers: expect.any(Array),
+                },
+            });
+        });
     });
-
     describe("Join room", () => {
         const endpoint = "/rooms/join";
         const roomid = "638e0b99ae132c4bc24f48c9";
@@ -98,4 +112,10 @@ describe("Testing rooms route", () => {
             });
         });
     });
+
+    // TODO: Add tests for:
+    //    - kicking room users
+    //    - banning room users
+    //    - Giving room admin role to another room user
+    //    - Deleting messages
 });

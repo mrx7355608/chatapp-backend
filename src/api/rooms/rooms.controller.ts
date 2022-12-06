@@ -66,7 +66,7 @@ export default {
         if (!room) {
             return next(new ApiError("Room does not exists", 404));
         }
-        return sendResponse(res, 200, { room });
+        return sendResponse(res, 200, room);
     }),
 
     httpGetRoomUsers: asyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
