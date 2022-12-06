@@ -17,8 +17,9 @@ export const getRoomUsers = async (roomid: string): Promise<Array<RoomUsers>> =>
 };
 
 export const getRoomMessages = async (roomid: string): Promise<Array<mongoose.Document>> => {
-    const room = (await RoomModel.findById(roomid, "-_id messages", {
-        $slice: -2,
+    const room = (await RoomModel.findById(roomid, {
+        _id: 0,
+        messages: { $slice: -20 },
     }).populate({
         path: "messages",
         select: "sender.username sender.photo message",
@@ -54,12 +55,9 @@ export const joinRoom = async (
         {
             new: true,
             projection: {
-                password: false,
-                __v: false,
-                createdAt: false,
-                updatedAt: false,
-                messages: false,
-                users: false,
+                name: true,
+                bannedUsers: true,
+                admin: true,
             },
         }
     );
@@ -81,7 +79,6 @@ export const addMessagesInRoom = async (
 };
 
 export const removeUsersFromRoom = async (roomid: string, username: string): Promise<void> => {
-    console.log({ username });
     await RoomModel.findByIdAndUpdate(
         roomid,
         { $pull: { users: { username } } },
