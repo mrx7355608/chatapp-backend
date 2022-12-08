@@ -19,7 +19,6 @@ export const catch404 = (req: Request, res: Response, next: NextFunction) => {
 
 // Error handler
 export const errorHandler = (err: ApiError, req: Request, res: Response, next: NextFunction) => {
-    console.log(err);
     const code = err.statusCode || 500;
     const message = err.message;
 

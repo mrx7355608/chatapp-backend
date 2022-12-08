@@ -51,11 +51,10 @@ roomSchema.pre<RoomInterface>("save", async function (next) {
 });
 
 // validate password
-roomSchema.methods.validatePassword = async function (
-    inputPassword: string
-): Promise<Boolean> {
+roomSchema.methods.validatePassword = async function (inputPassword: string): Promise<Boolean> {
     return await bcrypt.compare(inputPassword, this.password);
 };
+
 const RoomModel = mongoose.model<RoomInterface>("Room", roomSchema);
 
 export default RoomModel;

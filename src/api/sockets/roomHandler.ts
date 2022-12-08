@@ -1,6 +1,5 @@
-import { addMessagesInRoom, removeUsersFromRoom } from "@api/rooms/rooms.services";
+import { deleteRoomMessages, addMessagesInRoom, deleteRoom,removeUsersFromRoom } from "@api/rooms/rooms.services";
 import { createMessage } from "@api/messages/messages.services";
-import ApiError from "@utils/ApiError";
 import { Server, Socket } from "socket.io";
 import {
     ClientToServerEvents,
@@ -9,6 +8,7 @@ import {
     SocketData,
 } from "./sockets.interfaces";
 import { UserInterface } from "@api/users/users.interfaces";
+import {RoomInterface} from "@api/rooms/rooms.interfaces";
 
 export default (
     io: Server<ClientToServerEvents, ServerToClientEvents>,
@@ -48,6 +48,12 @@ export default (
         const user = socket.data.user as UserInterface;
 
         socket.to(roomid).emit("room:user-left", user);
-        await removeUsersFromRoom(roomid, user.username);
+        socket.leave(roomid)
+        const res = await removeUsersFromRoom(roomid, user.username) as RoomInterface;
+        if (res.users.length < 1) {
+            deleteRoomMessages(roomid);
+            deleteRoom(roomid);
+            return
+        }
     });
 };

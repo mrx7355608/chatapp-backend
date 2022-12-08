@@ -15,10 +15,10 @@ module.exports = {
         sourceType: "module",
     },
     rules: {
-        indent: "off",
+        "@typescript-eslint/indent": "off",
         "comma-dangle": "off",
         "space-before-function-paren": "off",
-        quotes: ["error", "doubleQuotes"],
+        quotes: ["error", "double"],
         "no-warning-comments": "off",
     },
 };
