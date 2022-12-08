@@ -48,6 +48,7 @@ export default (
         const user = socket.data.user as UserInterface;
 
         socket.to(roomid).emit("room:user-left", user);
+        socket.leave(roomid)
         const res = await removeUsersFromRoom(roomid, user.username) as RoomInterface;
         if (res.users.length < 1) {
             deleteRoomMessages(roomid);
